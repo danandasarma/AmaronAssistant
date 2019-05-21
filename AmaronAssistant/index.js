@@ -8,7 +8,7 @@ const path = require('path');
 const restify = require('restify');
 
 // Import required bot services. See https://aka.ms/bot-services to learn more about the different parts of a bot.
-const { BotFrameworkAdapter } = require('botbuilder');
+const { BotFrameworkAdapter, UserState, MemoryStorage } = require('botbuilder');
 
 // The bot.
 const { QnABot } = require('./bots/QnABot');
@@ -49,6 +49,15 @@ server.listen(process.env.port || process.env.PORT || 3978, function() {
     console.log(`\nTo talk to your bot, open the emulator select "Open Bot"`);
     console.log(`\nSee https://aka.ms/connect-to-bot for more information`);
 });
+
+// A bot requires a state store to persist the dialog and user state between messages.
+let userState;
+
+// For local development, in-memory storage is used.
+// CAUTION: The Memory Storage used here is for local bot debugging only. When the bot
+// is restarted, anything stored in memory will be gone.
+const memoryStorage = new MemoryStorage();
+userState = new UserState(memoryStorage);
 
 // Listen for incoming activities and route them to your bot main dialog.
 server.post('/api/messages', (req, res) => {
